@@ -67,9 +67,8 @@ namespace ConsoleApplication1
             }
             return "";
         }
-        public static int GetChar(string str)
+        public static int Find(string str, char ch)
         {
-            
             int stat = 0;
             for (int i = 0; i < str.Length; i++)
             {
@@ -77,19 +76,23 @@ namespace ConsoleApplication1
                     stat++;
                 else if (str[i] == ')')
                     stat--;
-                else if (stat == 0 && (str[i] == '+' || str[i] == '-'))
-                        return i;
-
-            }
-            for (int i = 0; i < str.Length; i++)
-            {
-                if (str[i] == '(')
-                    stat++;
-                else if (str[i] == ')')
-                    stat--;
-                else if (str[i] == '/' || str[i] == '*')
+                else if (stat == 0 && (str[i] == ch))
                     return i;
             }
+            return -1;
+        }
+        public static int GetChar(string str)
+        {
+            
+            int stat = 0;
+            if(Find(str, '+') > -1)
+            return Find(str, '+');
+            else if (Find(str, '-') > -1)
+                return Find(str, '-');
+            else if (Find(str, '*') > -1)
+                return Find(str, '*');
+            else if (Find(str, '/') > -1)
+                return Find(str, '/');
             return -1;
         }
         public static string GetChar(string str, bool type)

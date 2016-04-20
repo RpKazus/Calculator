@@ -7,16 +7,69 @@ namespace ConsoleApplication1
 {
     class Program
     {
-        private double AnalyzeString(string str)
+        public static Tree AnalyzeString(string str)
+        {
+                string left = GetAll(str, 1);
+                string right = GetAll(str, 2);
+                if (left == "" || right == "")
+                    return new Tree(new Tree(), str, new Tree());
+                if (left[0] == '(')
+                    left = left.Substring(1, left.Length - 2);
+                if (right[0] == '(')
+                    right = right.Substring(1, right.Length - 2);
+                return new Tree(AnalyzeString(left), GetChar(str, true), AnalyzeString(right));           
+        }
+        public static double Calculate(Tree tree)
+        {
+            try
+            {
+                if (Convert.ToDouble(tree.value) != null)
+                {
+                    return Convert.ToDouble(tree.value);
+                }
+            }
+            catch (FormatException)
+            {
+                switch (tree.value)
+                {
+                    case "+":
+                        return Calculate(tree.leftTree) + Calculate(tree.rightTree);
+                        break;
+                    case "-":
+                        return Calculate(tree.leftTree) - Calculate(tree.rightTree);
+                        break;
+                    case "/":
+                        return Calculate(tree.leftTree) / Calculate(tree.rightTree);
+                        break;
+                    case "*":
+                        return Calculate(tree.leftTree) * Calculate(tree.rightTree);
+                        break;
+                }
+            }
+            return 0;
+        }
+        public static Tree SetTree(Tree leftTree, string str, Tree rightTree)
+        {
+            if(GetChar(str) != -1) 
+            return new Tree(leftTree, GetChar(str, true), rightTree);
+            return new Tree(leftTree, str, rightTree);
+        }
+        public static string GetAll(string str, int num)
+        {
+            int i = GetChar(str);
+            if (i != -1)
+            {
+                string left = str.Substring(0, i);
+                string right = str.Substring(i + 1, str.Length - i - 1);
+                if (num == 1)
+                    return left;
+                return right;
+            }
+            return "";
+        }
+        public static int GetChar(string str)
         {
             
-        }
-        private Tree SetTree(Tree leftTree, string str, Tree rightTree)
-        {
-            return new Tree(leftTree, if(GetChar(str) != null) ? str.Substring(GetChar(str),GetChar(str) : str), rightTree);
-        }
-        private int GetChar(string str)
-        {
             int stat = 0;
             for (int i = 0; i < str.Length; i++)
             {
@@ -24,16 +77,30 @@ namespace ConsoleApplication1
                     stat++;
                 else if (str[i] == ')')
                     stat--;
-                else if (str[i] == '+' || str[i] == '-' || str[i] == '/' || str[i] == '*')
+                else if (stat == 0 && (str[i] == '+' || str[i] == '-'))
+                        return i;
+
+            }
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (str[i] == '(')
+                    stat++;
+                else if (str[i] == ')')
+                    stat--;
+                else if (str[i] == '/' || str[i] == '*')
                     return i;
             }
-            return null;
+            return -1;
         }
-        int marker1;
-        int marker2;
+        public static string GetChar(string str, bool type)
+        {
+            return str.Substring(GetChar(str), 1);
+        }
         static void Main(string[] args)
         {
-
+            string str = Console.ReadLine();
+            Console.WriteLine(Calculate(AnalyzeString(str)));
+            Console.ReadLine();
         }
     }
 }

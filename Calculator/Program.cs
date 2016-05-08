@@ -7,6 +7,7 @@ namespace ConsoleApplication1
 {
     class Program
     {
+        static List<string> varList = new List<string>();
         public static Tree AnalyzeString(string str)
         {
                 string left = GetAll(str, 1);
@@ -78,7 +79,7 @@ namespace ConsoleApplication1
             {
                 if (str[i] == '(')
                     stat++;
-                else if (str[i] == ')')
+                else if (str[i] == ')' && stat > 0)
                     stat--;
                 else if (str[i] == ')' && stat > 0)
                     stat--;
@@ -107,9 +108,47 @@ namespace ConsoleApplication1
         {
             return str.Substring(GetChar(str), 1);
         }
+        public static string Simpler(string str)
+        {
+            bool inProcess = false;
+            int marker1 = -1;
+            for (int i = 0; i < str.Length; i++ )
+            {
+                if (Char.IsLetter(str[i]))
+                {
+                    if (marker1 == -1) marker1 = i;
+                    inProcess = true;
+                }
+                else if (inProcess == true)
+                {
+                    if (!varList.Contains(str.Substring(marker1, i - marker1))) varList.Add(str.Substring(marker1, i - marker1));
+                    marker1 = -1;
+                    inProcess = false;
+                }
+                if(i == str.Length - 1 && inProcess)
+                    if (!varList.Contains(str.Substring(marker1, i - marker1 + 1))) varList.Add(str.Substring(marker1, i - marker1 + 1));
+            }
+            // делаю запрос на переменные
+            for (int i = 0; i < varList.Count; i++)
+            {
+                Console.Write("Укажите значение переменной {0}:", varList[i]);
+                try
+                {
+                    str = str.Replace(varList[i],"(" + Convert.ToDouble(Console.ReadLine()).ToString() + ")");
+                }
+                catch (FormatException)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Наберите читаемое число!!");
+                    Console.ResetColor();
+                    i--;
+                }
+            }
+            return str;
+        }
         static void Main(string[] args)
         {
-            string str = Console.ReadLine();
+            string str = Simpler(Console.ReadLine());
             Console.WriteLine(Calculate(AnalyzeString(str)));
             Console.ReadLine();
         }

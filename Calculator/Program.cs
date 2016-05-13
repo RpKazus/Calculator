@@ -14,9 +14,13 @@ namespace ConsoleApplication1
                 if (left == "" || right == "")
                     return new Tree(new Tree(), str, new Tree());
                 if (left[0] == '(')
-                    left = left.Substring(1, left.Length - 2);
+                    left = left.Substring(1, left.Length - 1);
+                if (left[left.Length - 1] == ')')
+                    left = left.Substring(0, left.Length - 1);
                 if (right[0] == '(')
-                    right = right.Substring(1, right.Length - 2);
+                    right = right.Substring(1, right.Length - 1);
+                if (right[right.Length - 1] == ')')
+                    right = right.Substring(0, right.Length - 1);
                 return new Tree(AnalyzeString(left), GetChar(str, true), AnalyzeString(right));           
         }
         public static double Calculate(Tree tree)
@@ -76,6 +80,10 @@ namespace ConsoleApplication1
                     stat++;
                 else if (str[i] == ')')
                     stat--;
+                else if (str[i] == ')' && stat > 0)
+                    stat--;
+                else if (str[i] == ')' && stat <= 0)
+                    return i - 1;
                 else if (stat == 0 && (str[i] == ch))
                     return i;
             }
